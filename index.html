@@ -285,6 +285,7 @@
     display:flex;
     align-items:baseline;
     gap:3px;
+    flex-wrap:wrap;
   }
 
   .id-input{
@@ -296,8 +297,8 @@
     border:none;
     border-bottom:1px dashed transparent;
     outline:none;
-    flex:1 1 auto;
-    min-width:0;
+    min-width:2ch;
+    max-width:100%;
   }
   .server-input{
     font-family:'Sora', sans-serif;
@@ -308,8 +309,8 @@
     border:none;
     border-bottom:1px dashed transparent;
     outline:none;
-    width:34px;
-    flex-shrink:0;
+    min-width:2ch;
+    max-width:100%;
     text-align:center;
   }
   .id-input:focus, .server-input:focus{ border-bottom-color:var(--gold-soft); }
@@ -745,6 +746,12 @@
       closeCropper();
     });
 
+    function resizeToContent(el, minCh){
+      const placeholderLen = (el.placeholder || '').length;
+      const len = Math.max(el.value.length, placeholderLen, minCh || 1);
+      el.style.width = (len + 1) + 'ch';
+    }
+
     function createCard(prefill){
       const node = template.content.firstElementChild.cloneNode(true);
       const avatar = node.querySelector('[data-role="avatar"]');
@@ -760,6 +767,8 @@
         usernameInput.value = prefill.username || '';
         userIdInput.value = prefill.userId || '';
         serverIdInput.value = prefill.serverId || '';
+        resizeToContent(userIdInput, 4);
+        resizeToContent(serverIdInput, 4);
         if (prefill.avatarSrc){
           avatar.style.backgroundImage = `url('${prefill.avatarSrc}')`;
           avatar.style.backgroundSize = 'cover';
@@ -800,6 +809,11 @@
       usernameInput.addEventListener('input', saveState);
       userIdInput.addEventListener('input', saveState);
       serverIdInput.addEventListener('input', saveState);
+
+      resizeToContent(userIdInput, 4);
+      resizeToContent(serverIdInput, 4);
+      userIdInput.addEventListener('input', () => resizeToContent(userIdInput, 4));
+      serverIdInput.addEventListener('input', () => resizeToContent(serverIdInput, 4));
 
       grid.appendChild(node);
     }
